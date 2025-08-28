@@ -2,7 +2,7 @@ defmodule HttpServer.Handler do
   def handle(request) do
     request
     |> parse
-    |> log
+    # |> log
     |> route
     |> format_response
   end
@@ -14,25 +14,21 @@ defmodule HttpServer.Handler do
       |> List.first()
       |> String.split(" ")
 
-    %{method: method,
-      path: path,
-      resp_body: "",
-      status: nil
-    }
+    %{method: method, path: path, resp_body: "", status: nil}
   end
 
   def log(conv), do: IO.inspect(conv)
 
-  def route(conv) do
-    conv |> route(conv.method, conv.path)
-  end
-
-  def route(conv, "GET", "/hello") do
+  def route(%{method: "GET", path: "/hello"} = conv) do
     %{conv | resp_body: "hello world!", status: 200}
   end
 
-  def route(conv, method, path) do
-    %{conv | resp_body: "No endpoints for #{method} #{path}", status: 404}
+  def route(%{method: "GET", path: "/resource" <> id} = conv) do
+    %{conv | status: 200, resp_body: "Resource number #{id}"}
+  end
+
+  def route(%{method: method, path: path} = conv) do
+    %{conv | status: 404, resp_body: "No endpoint for #{method} #{path}"}
   end
 
   def format_response(conv) do
@@ -58,7 +54,7 @@ defmodule HttpServer.Handler do
 end
 
 sample_request = """
-GET /hello HTTP/1.1
+GET /resource/23 HTTP/1.1
 HOST: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
