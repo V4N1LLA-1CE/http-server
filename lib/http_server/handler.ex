@@ -33,6 +33,15 @@ defmodule HttpServer.Handler do
     |> handle_file(conv)
   end
 
+  def route(%Conv{method: "POST", path: "/resource"} = conv) do
+    %{
+      conv
+      | status: 201,
+        resp_body:
+          "New resource! Created a #{conv.params["resource"]} of type #{conv.params["type"]}"
+    }
+  end
+
   def route(%Conv{method: "GET", path: "/resource" <> id} = conv) do
     %{conv | status: 200, resp_body: "Resource number #{id}"}
   end
@@ -64,12 +73,17 @@ defmodule HttpServer.Handler do
   end
 end
 
-sample_request = """
-GET /about HTTP/1.1
+request = """
+POST /resource HTTP/1.1
 HOST: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+resource=supersecret&type=plaintext
 """
 
-response = HttpServer.Handler.handle(sample_request)
+response = HttpServer.Handler.handle(request)
+
 IO.puts(response)
