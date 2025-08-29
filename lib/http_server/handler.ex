@@ -2,7 +2,7 @@ defmodule HttpServer.Handler do
   def handle(request) do
     request
     |> parse
-    # |> log
+    |> log
     |> route
     |> format_response
   end
@@ -21,6 +21,23 @@ defmodule HttpServer.Handler do
 
   def route(%{method: "GET", path: "/hello"} = conv) do
     %{conv | resp_body: "hello world!", status: 200}
+  end
+
+  def route(%{method: "GET", path: "/about"} = conv) do
+    file =
+      Path.expand("../pages", __DIR__)
+      |> Path.join("about.html")
+
+    case File.read(file) do
+      {:ok, content} ->
+        %{conv | status: 200, resp_body: content}
+
+      {:error, :enoent} ->
+        %{conv | status: 404, resp_body: "Page does not exist or cannot be found"}
+
+      {:error, reason} ->
+        %{conv | status: 500, resp_body: "File error: #{reason}"}
+    end
   end
 
   def route(%{method: "GET", path: "/resource" <> id} = conv) do
@@ -54,7 +71,7 @@ defmodule HttpServer.Handler do
 end
 
 sample_request = """
-GET /resource/23 HTTP/1.1
+GET /about HTTP/1.1
 HOST: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
