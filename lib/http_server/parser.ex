@@ -2,8 +2,8 @@ defmodule HttpServer.Parser do
   alias HttpServer.Conv
 
   def parse(request) do
-    [top, param_string] = String.split(request, "\n\n")
-    [start | header] = top |> String.split("\n")
+    [top, param_string] = String.split(request, "\r\n\r\n")
+    [start | header] = top |> String.split("\r\n")
 
     headers = parse_headers(header, %{})
     params = parse_params(headers["Content-Type"], param_string)
