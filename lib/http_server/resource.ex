@@ -1,4 +1,5 @@
 defmodule HttpServer.Resource do
+  @derive {Jason.Encoder, only: [:id, :resource, :type, :valid]}
   defstruct id: nil, resource: "", type: "", valid: false
 
   def is_valid(r) do

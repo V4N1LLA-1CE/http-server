@@ -3,6 +3,7 @@ defmodule HttpServer.Conv do
             path: "",
             params: %{},
             headers: %{},
+            content_type: "text/html",
             resp_body: "",
             status: nil
 
