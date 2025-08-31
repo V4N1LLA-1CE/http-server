@@ -1,5 +1,6 @@
 defmodule HttpServer.Handler do
   alias HttpServer.Conv
+  alias HttpServer.ResourceController
 
   @moduledoc """
   Handles HTTP requests.
@@ -26,24 +27,24 @@ defmodule HttpServer.Handler do
     %{conv | resp_body: "hello world!", status: 200}
   end
 
+  def route(%Conv{method: "GET", path: "/resource"} = conv) do
+    ResourceController.index(conv)
+  end
+
+  def route(%Conv{method: "GET", path: "/resource/" <> id} = conv) do
+    params = Map.put(conv.params, "id", id)
+    ResourceController.show(conv, params)
+  end
+
+  def route(%Conv{method: "POST", path: "/resource"} = conv) do
+    ResourceController.create(conv, conv.params)
+  end
+
   def route(%Conv{method: "GET", path: "/about"} = conv) do
     @pages_path
     |> Path.join("about.html")
     |> File.read()
     |> handle_file(conv)
-  end
-
-  def route(%Conv{method: "POST", path: "/resource"} = conv) do
-    %{
-      conv
-      | status: 201,
-        resp_body:
-          "New resource! Created a #{conv.params["resource"]} of type #{conv.params["type"]}"
-    }
-  end
-
-  def route(%Conv{method: "GET", path: "/resource" <> id} = conv) do
-    %{conv | status: 200, resp_body: "Resource number #{id}"}
   end
 
   def route(%Conv{method: method, path: path} = conv) do
@@ -73,15 +74,24 @@ defmodule HttpServer.Handler do
   end
 end
 
+# request = """
+# POST /resource HTTP/1.1
+# HOST: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+# Content-Type: application/x-www-form-urlencoded
+# Content-Length: 21
+#
+# resource=supersecret&type=plaintext
+# """
+
 request = """
-POST /resource HTTP/1.1
+GET /resource/4 HTTP/1.1
 HOST: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
 Content-Type: application/x-www-form-urlencoded
-Content-Length: 21
 
-resource=supersecret&type=plaintext
 """
 
 response = HttpServer.Handler.handle(request)
