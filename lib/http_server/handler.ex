@@ -85,8 +85,18 @@ end
 # resource=supersecret&type=plaintext
 # """
 
+# request = """
+# GET /resource HTTP/1.1
+# HOST: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+# Content-Type: application/x-www-form-urlencoded
+# Content-Length: 21
+#
+# """
+
 request = """
-GET /resource/4 HTTP/1.1
+GET /resource/3 HTTP/1.1
 HOST: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*

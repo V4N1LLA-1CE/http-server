@@ -1,0 +1,7 @@
+<h1>All resources</h1>
+
+<ul>
+  <%= for r <- resources do %>
+    <li><%= r.id %> - <%= r.type%> - <%= r.resource%></li>
+  <% end %>
+</ul>

@@ -1,0 +1,9 @@
+<h1>Show Resource</h1>
+
+<h3><%= resource.resource %></h3>
+
+<%= if resource.valid do %>
+<p>resource is<strong>VALID!</strong></p>
+<% else %>
+<p>resource is <strong>NOT VALID!</strong></p>
+<% end %>
